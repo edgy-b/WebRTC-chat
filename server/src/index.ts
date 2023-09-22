@@ -1,6 +1,6 @@
-import express from "express";
-import http from "http";
-import { Server } from "socket.io"
+import express from 'express';
+import http from 'http';
+import { Server } from 'socket.io'
 
 const port = process.env.PORT || 8080;
 const app = express();
