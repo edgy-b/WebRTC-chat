@@ -8,18 +8,23 @@ interface Room {
 }
 
 export const roomHandler = (socket: Socket) => {
-    const createOrJoinRoom = ({ roomName, userName, password }: Room) => {
+    const createOrJoinRoom = ({ roomName, password }: Room) => {
         const isCreate = rooms[roomName] ? false : true;
         console.log(rooms, 'rooms', isCreate, roomName);
 
         if (isCreate) {
             rooms[roomName] = { password };
             socket.emit('room-created', { roomName });
-            console.log('room created');
+            console.log('room created', roomName);
         } else {
-            
-            socket.emit('room-joined');
-            console.log('user joined room', roomName);
+            const { password: roomPassword } = rooms[roomName];
+
+            if (password !== roomPassword) {
+                socket.emit('password-not-match');
+            } else {
+                socket.emit('room-joined', { roomName, password });
+                console.log('user joined room', roomName);
+            }
         }
     }
 
