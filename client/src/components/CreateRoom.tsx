@@ -8,7 +8,7 @@ const CreateRoom: React.FC = () => {
     const [roomName, setRoomName] = useState<string>('');
     const [userName, setUserName] = useState<string>('');
     const [password, setPassword] = useState<string>('');
-    const [error, setError] = useState<boolean>(false);
+    const [error, setError] = useState<string>('');
     const [show, setShow] = useState<boolean>(false);
     const { client } = useContext(Context);
     const navigateTo = useNavigate();
@@ -16,25 +16,33 @@ const CreateRoom: React.FC = () => {
     const alertOnRoom = () => {
         console.log('user tries to join room', password, roomName, error, !error);
         if (!error) {
-            setError(true);
+            setError('Room already exists and password did not match. Enter correct password to join existing room or fill in unique room name to create it.');
             setShow(true);
         }
     }
 
     const joinOnRoom = ({ roomName }: { roomName: string }) => {
-        navigateTo(`/room/${roomName}`)
+        navigateTo(`/room/${roomName}`);
+    }
+
+    const errorOnJoining = (errors: string[]) => {
+        if (!error) {
+            setError(errors.reduce((acc, err) => acc + err + '\n', ''));
+            setShow(true);
+        }
     }
 
     useEffect(() => {
         client.on('room-joined', joinOnRoom);
 
         return () => {
-            setError(false);
+            setError('');
         }
     }, []);
 
     useEffect(() => {
         client.on('password-not-match', alertOnRoom);
+        client.on('error-joining', errorOnJoining)
     }, [error]);
 
     const createOrJoin = () => {
@@ -46,7 +54,7 @@ const CreateRoom: React.FC = () => {
     }
 
     return (
-        <div className="bg-gray-800 p-8 rounded-lg">
+        <div className="bg-gray-800 p-8 rounded-lg mt-8">
             <div>
                 <Input
                   name="room"
@@ -73,12 +81,12 @@ const CreateRoom: React.FC = () => {
                   className="pb-6"
                 />
             </div>
-            <button onClick={ createOrJoin } className="w-full rounded-lg p-4 bg-green-700">
+            <button onClick={ createOrJoin } className="w-full rounded-lg p-4 bg-green-700 hover:bg-green-600">
                 Join or create room
             </button>
             {
                 error && <Modal show={ show } handleClose={ hideModal }>
-                    Room already exists and password did not match. Enter correct password or fill unique room name to create and join another room.
+                    { error }
                 </Modal>
             }
         </div>

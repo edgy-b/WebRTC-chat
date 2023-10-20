@@ -11,7 +11,7 @@ const Modal: React.FC<ModalProps> = ({ handleClose, show, children }) => {
 
     return (
         <div className={ showHideClassName }>
-            <section className="fixed flex flex-col items-center justify-around top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-1/3.5 h-1/3.5 p-4 bg-white rounded-lg">
+            <section className="fixed flex flex-col items-center justify-around top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-1/2 lg:w-1/3.5 lg:h-1/3.5 p-4 bg-white rounded-lg">
                 <div className="p-2">
                     { children }
                 </div>
